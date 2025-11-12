@@ -29,7 +29,7 @@ bool JsonEx::load(const char *path)noexcept{
 	auto s = const_cast<char *>(buf.c_str());
 	uint32_t line = 1;
 
-	// ‹ó”’ƒXƒLƒbƒv
+	// ç©ºç™½ã‚¹ã‚­ãƒƒãƒ—
 	auto skip_ws = [&s, &line](void)noexcept -> void {
 		for(; *s && isspace(static_cast<uint8_t>(*s)); ++s){
 			if(*s == '\n'){
@@ -38,7 +38,7 @@ bool JsonEx::load(const char *path)noexcept{
 		}
 	};
 
-	// •¶š—ñƒp[ƒX
+	// æ–‡å­—åˆ—ãƒ‘ãƒ¼ã‚¹
 	auto parse_string = [&s, &line](std::string &value)noexcept -> bool {
 		++s;
 		auto start = s, d = s;
@@ -99,12 +99,12 @@ bool JsonEx::load(const char *path)noexcept{
 		return true;
 	};
 
-	// ƒp[ƒX
+	// ãƒ‘ãƒ¼ã‚¹
 	auto parse_value = [this, &s, &line, skip_ws, parse_string](auto self, Node &value)noexcept -> bool {
 		skip_ws();
 		value.line = line;
 
-		// ƒIƒuƒWƒFƒNƒg
+		// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 		if(*s == '{'){
 			value.type = Node::Type::object_t;
 			++s;
@@ -113,7 +113,7 @@ bool JsonEx::load(const char *path)noexcept{
 				Node child{};
 				skip_ws();
 				if(*s != '"'){
-					fprintf(stderr, "Error: %ds–Ú: ƒVƒ“ƒ^ƒbƒNƒXƒGƒ‰[B\n", line);
+					fprintf(stderr, "Error: %dè¡Œç›®: ã‚·ãƒ³ã‚¿ãƒƒã‚¯ã‚¹ã‚¨ãƒ©ãƒ¼ã€‚\n", line);
 					return false;
 				}
 				if(!parse_string(child.key)){
@@ -121,7 +121,7 @@ bool JsonEx::load(const char *path)noexcept{
 				}
 				skip_ws();
 				if(*s != ':'){
-					fprintf(stderr, "Error: %ds–Ú: ƒVƒ“ƒ^ƒbƒNƒXƒGƒ‰[B\n", line);
+					fprintf(stderr, "Error: %dè¡Œç›®: ã‚·ãƒ³ã‚¿ãƒƒã‚¯ã‚¹ã‚¨ãƒ©ãƒ¼ã€‚\n", line);
 					return false;
 				}
 				++s;
@@ -140,7 +140,7 @@ bool JsonEx::load(const char *path)noexcept{
 				}else if(*s == '}'){
 					break;
 				}else{
-					fprintf(stderr, "Error: %ds–Ú: ƒVƒ“ƒ^ƒbƒNƒXƒGƒ‰[B\n", line);
+					fprintf(stderr, "Error: %dè¡Œç›®: ã‚·ãƒ³ã‚¿ãƒƒã‚¯ã‚¹ã‚¨ãƒ©ãƒ¼ã€‚\n", line);
 					return false;
 				}
 				skip_ws();
@@ -148,13 +148,13 @@ bool JsonEx::load(const char *path)noexcept{
 			if(*s == '}'){
 				++s;
 			}else{
-				fprintf(stderr, "Error: %ds–Ú: ƒVƒ“ƒ^ƒbƒNƒXƒGƒ‰[B\n", line);
+				fprintf(stderr, "Error: %dè¡Œç›®: ã‚·ãƒ³ã‚¿ãƒƒã‚¯ã‚¹ã‚¨ãƒ©ãƒ¼ã€‚\n", line);
 				return false;
 			}
 			return _load(value);
 		}
 
-		// ”z—ñ
+		// é…åˆ—
 		else if(*s == '['){
 			value.type = Node::Type::array_t;
 			++s;
@@ -175,7 +175,7 @@ bool JsonEx::load(const char *path)noexcept{
 				}else if(*s == ']'){
 					break;
 				}else{
-					fprintf(stderr, "Error: %ds–Ú: ƒVƒ“ƒ^ƒbƒNƒXƒGƒ‰[B\n", line);
+					fprintf(stderr, "Error: %dè¡Œç›®: ã‚·ãƒ³ã‚¿ãƒƒã‚¯ã‚¹ã‚¨ãƒ©ãƒ¼ã€‚\n", line);
 					return false;
 				}
 				skip_ws();
@@ -183,19 +183,19 @@ bool JsonEx::load(const char *path)noexcept{
 			if(*s == ']'){
 				++s;
 			}else{
-				fprintf(stderr, "Error: %ds–Ú: ƒVƒ“ƒ^ƒbƒNƒXƒGƒ‰[B\n", line);
+				fprintf(stderr, "Error: %dè¡Œç›®: ã‚·ãƒ³ã‚¿ãƒƒã‚¯ã‚¹ã‚¨ãƒ©ãƒ¼ã€‚\n", line);
 				return false;
 			}
 			return _load(value);
 		}
 
-		// •¶š—ñ
+		// æ–‡å­—åˆ—
 		else if(*s == '"'){
 			value.type = Node::Type::string_t;
 			return parse_string(value.value_string) && _load(value);
 		}
 
-		// ”’l
+		// æ•°å€¤
 		else if (isdigit(static_cast<uint8_t>(*s)) || *s == '-'){
 			auto p = s + 1;
 			while(*p && isdigit(static_cast<uint8_t>(*p))){
@@ -232,11 +232,11 @@ bool JsonEx::load(const char *path)noexcept{
 			return _load(value);
 		}
 
-		fprintf(stderr, "Error: %ds–Ú: ƒVƒ“ƒ^ƒbƒNƒXƒGƒ‰[B\n", line);
+		fprintf(stderr, "Error: %dè¡Œç›®: ã‚·ãƒ³ã‚¿ãƒƒã‚¯ã‚¹ã‚¨ãƒ©ãƒ¼ã€‚\n", line);
 		return false;
 	};
 
-	// ƒp[ƒX
+	// ãƒ‘ãƒ¼ã‚¹
 	return parse_value(parse_value, _root);
 }
 
