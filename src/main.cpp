@@ -20,7 +20,7 @@ int main(int argc, char *argv[]){
 				if(i + 1 < argc){
 					path_output = argv[++i];
 				}else{
-					fprintf(stderr, "Error: -o ƒIƒvƒVƒ‡ƒ“‚Éo—Íƒtƒ@ƒCƒ‹–¼‚ª‚ ‚è‚Ü‚¹‚ñB\n");
+					fprintf(stderr, "Error: -o ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã«å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«åãŒã‚ã‚Šã¾ã›ã‚“ã€‚\n");
 					return 1;
 				}
 				break;
@@ -34,7 +34,7 @@ int main(int argc, char *argv[]){
 				if(i + 1 < argc){
 					path_dtype = argv[++i];
 				}else{
-					fprintf(stderr, "Error: -t ƒIƒvƒVƒ‡ƒ“‚Édtypeƒtƒ@ƒCƒ‹–¼‚ª‚ ‚è‚Ü‚¹‚ñB\n");
+					fprintf(stderr, "Error: -t ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã«dtypeãƒ•ã‚¡ã‚¤ãƒ«åãŒã‚ã‚Šã¾ã›ã‚“ã€‚\n");
 					return 1;
 				}
 				break;
@@ -44,16 +44,16 @@ int main(int argc, char *argv[]){
     }
   }
   if(!path_input){
-    fprintf(stderr, "g‚¢•û: %s [ƒIƒvƒVƒ‡ƒ“] “ü—Íƒtƒ@ƒCƒ‹–¼\n", argv[0]);
-    fprintf(stderr, "ƒIƒvƒVƒ‡ƒ“:\n");
-    fprintf(stderr, "  -d : ƒfƒR[ƒhƒ‚[ƒh gil,gia¨json\n");
-		fprintf(stderr, "  -e : ƒGƒ“ƒR[ƒhƒ‚[ƒh json¨gil,gia\n");
-		fprintf(stderr, "  -o o—Íƒtƒ@ƒCƒ‹–¼ : o—Íƒtƒ@ƒCƒ‹–¼‚ğw’è(ƒfƒtƒHƒ‹ƒg:output.jsonAoutput.gilAoutput.gia)\n");
-		fprintf(stderr, "  -t dtypeƒtƒ@ƒCƒ‹–¼ : dtypeƒtƒ@ƒCƒ‹–¼‚ğw’è(ƒfƒtƒHƒ‹ƒg:dtype.json)\n");
+    fprintf(stderr, "ä½¿ã„æ–¹: %s [ã‚ªãƒ—ã‚·ãƒ§ãƒ³] å…¥åŠ›ãƒ•ã‚¡ã‚¤ãƒ«å\n", argv[0]);
+    fprintf(stderr, "ã‚ªãƒ—ã‚·ãƒ§ãƒ³:\n");
+    fprintf(stderr, "  -d : ãƒ‡ã‚³ãƒ¼ãƒ‰ãƒ¢ãƒ¼ãƒ‰ gil,giaâ†’json\n");
+		fprintf(stderr, "  -e : ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰ãƒ¢ãƒ¼ãƒ‰ jsonâ†’gil,gia\n");
+		fprintf(stderr, "  -o å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«å : å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«åã‚’æŒ‡å®š(ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ:output.jsonã€output.gilã€output.gia)\n");
+		fprintf(stderr, "  -t dtypeãƒ•ã‚¡ã‚¤ãƒ«å : dtypeãƒ•ã‚¡ã‚¤ãƒ«åã‚’æŒ‡å®š(ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ:dtype.json)\n");
     return 1;
   }
 
-	// ƒ‚[ƒh”»’è
+	// ãƒ¢ãƒ¼ãƒ‰åˆ¤å®š
 	if(mode == MODE::DEFAULT){
 		auto size = strlen(path_input);
 		if(size >= 5 && _stricmp(&path_input[size - 5], ".json") == 0){
@@ -72,29 +72,29 @@ int main(int argc, char *argv[]){
 		path_dtype = "dtype.json";
 	}
 
-	// ‰Šú‰»
+	// åˆæœŸåŒ–
 	Ugc ugc;
 	if(!ugc.load_dtype(path_dtype)){
-		printf("ƒGƒ‰[: dtypeƒtƒ@ƒCƒ‹‚ª“Ç‚İ‚ß‚Ü‚¹‚ñ‚Å‚µ‚½B\n");
+		printf("ã‚¨ãƒ©ãƒ¼: dtypeãƒ•ã‚¡ã‚¤ãƒ«ãŒèª­ã¿è¾¼ã‚ã¾ã›ã‚“ã§ã—ãŸã€‚\n");
 		return 1;
 	}
 
-	// ƒfƒR[ƒh
+	// ãƒ‡ã‚³ãƒ¼ãƒ‰
 	if(mode == MODE::DECODE){
 		if(!ugc.load_file(path_input)){
-			printf("ƒGƒ‰[: “ü—Íƒtƒ@ƒCƒ‹‚ª“Ç‚İ‚ß‚Ü‚¹‚ñ‚Å‚µ‚½B\n");
+			printf("ã‚¨ãƒ©ãƒ¼: å…¥åŠ›ãƒ•ã‚¡ã‚¤ãƒ«ãŒèª­ã¿è¾¼ã‚ã¾ã›ã‚“ã§ã—ãŸã€‚\n");
 			return 1;
 		}
 		if(!ugc.save_json(path_output)){
-			printf("ƒGƒ‰[: o—Íƒtƒ@ƒCƒ‹‚ª‘‚«‚ß‚Ü‚¹‚ñ‚Å‚µ‚½B\n");
+			printf("ã‚¨ãƒ©ãƒ¼: å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ãŒæ›¸ãè¾¼ã‚ã¾ã›ã‚“ã§ã—ãŸã€‚\n");
 			return 1;
 		}
 	}
 
-	// ƒGƒ“ƒR[ƒh
+	// ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰
 	else if(mode == MODE::ENCODE){
 		if(!ugc.load_json(path_input)){
-			printf("ƒGƒ‰[: “ü—Íƒtƒ@ƒCƒ‹‚ª“Ç‚İ‚ß‚Ü‚¹‚ñ‚Å‚µ‚½B\n");
+			printf("ã‚¨ãƒ©ãƒ¼: å…¥åŠ›ãƒ•ã‚¡ã‚¤ãƒ«ãŒèª­ã¿è¾¼ã‚ã¾ã›ã‚“ã§ã—ãŸã€‚\n");
 			return 1;
 		}
 		if(!path_output){
@@ -105,14 +105,14 @@ int main(int argc, char *argv[]){
 			}
 		}
 		if(!ugc.save_file(path_output)){
-			printf("ƒGƒ‰[: o—Íƒtƒ@ƒCƒ‹‚ª‘‚«‚ß‚Ü‚¹‚ñ‚Å‚µ‚½B\n");
+			printf("ã‚¨ãƒ©ãƒ¼: å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ãŒæ›¸ãè¾¼ã‚ã¾ã›ã‚“ã§ã—ãŸã€‚\n");
 			return 1;
 		}
 	}
 
-	// ƒƒO
+	// ãƒ­ã‚°
 	if(ugc.is_update()){
-		printf("dtypeƒtƒ@ƒCƒ‹‚ÌXV‚ ‚è\n");
+		printf("dtypeãƒ•ã‚¡ã‚¤ãƒ«ã®æ›´æ–°ã‚ã‚Š\n");
 		std::string new_path;
 		try{
 			new_path = std::string(path_dtype) + ".bak";
