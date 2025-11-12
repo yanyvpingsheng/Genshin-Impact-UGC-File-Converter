@@ -103,19 +103,19 @@ void Log::print(void)noexcept{
 		if(log.line == 0){
 			continue;
 		}
-		printf("%ds–Ú: ", log.line);
+		printf("%dè¡Œç›®: ", log.line);
 		switch(log.type){
 		case Data::Type::type_unknown:
-			printf("ƒuƒƒbƒN“à‚É•s–¾‚ÈŒ^‚ğŒŸo Œ^=%d\n", log.unknown_type);
+			printf("ãƒ–ãƒ­ãƒƒã‚¯å†…ã«ä¸æ˜ãªå‹ã‚’æ¤œå‡º å‹=%d\n", log.unknown_type);
 			break;
 		case Data::Type::insert_int:
-			printf("ƒuƒƒbƒN“à‚É•s–¾‚ÈID‚ğŒŸo ID=%d Œ^=int ’l=%d\n", log.id, log.value_int);
+			printf("ãƒ–ãƒ­ãƒƒã‚¯å†…ã«ä¸æ˜ãªIDã‚’æ¤œå‡º ID=%d å‹=int å€¤=%d\n", log.id, log.value_int);
 			break;
 		case Data::Type::insert_float:
-			printf("ƒuƒƒbƒN“à‚É•s–¾‚ÈID‚ğŒŸo ID=%d Œ^=float ’l=%f\n", log.id, log.value_float);
+			printf("ãƒ–ãƒ­ãƒƒã‚¯å†…ã«ä¸æ˜ãªIDã‚’æ¤œå‡º ID=%d å‹=float å€¤=%f\n", log.id, log.value_float);
 			break;
 		case Data::Type::insert_unknown:
-			printf("ƒuƒƒbƒN“à‚É•s–¾‚ÈID‚ğŒŸo ID=%d Œ^=•s–¾ ƒTƒCƒY=0x%X ƒf[ƒ^= ", log.id, static_cast<uint32_t>(log.value_data.size()));
+			printf("ãƒ–ãƒ­ãƒƒã‚¯å†…ã«ä¸æ˜ãªIDã‚’æ¤œå‡º ID=%d å‹=ä¸æ˜ ã‚µã‚¤ã‚º=0x%X ãƒ‡ãƒ¼ã‚¿= ", log.id, static_cast<uint32_t>(log.value_data.size()));
 			if(!log.value_data.empty()){
 				auto size = log.value_data.size() > 16 ? 16 : log.value_data.size();
 				for(auto s = &log.value_data[0]; size; --size, ++s){
@@ -125,10 +125,10 @@ void Log::print(void)noexcept{
 			printf("\n");
 			break;
 		case Data::Type::is_array:
-			printf("•¡”‚Ì“¯ˆêID‚ğŒŸoB—v”z—ñ‰» ID=%d\n", log.id);
+			printf("è¤‡æ•°ã®åŒä¸€IDã‚’æ¤œå‡ºã€‚è¦é…åˆ—åŒ– ID=%d\n", log.id);
 			break;
 		case Data::Type::unknown:
-			printf("Œ^‚ª–¢“Á’è ID=%d ƒTƒCƒY=0x%X ƒf[ƒ^= ", log.id, static_cast<uint32_t>(log.value_data.size()));
+			printf("å‹ãŒæœªç‰¹å®š ID=%d ã‚µã‚¤ã‚º=0x%X ãƒ‡ãƒ¼ã‚¿= ", log.id, static_cast<uint32_t>(log.value_data.size()));
 			{
 				auto size = log.value_data.size() > 16 ? 16 : log.value_data.size();
 				for(auto s = &log.value_data[0]; size; --size, ++s){
