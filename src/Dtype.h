@@ -1,36 +1,85 @@
 #pragma once
 
-#include "JsonEx.h"
+#include <cstdint>
+#include <vector>
+#include <string>
+#include <unordered_map>
+#include "Reader.h"
+#include "Writer.h"
 
-class Dtype: public JsonEx{
+using string_t = std::string;
+
+class Dtype{
 public:
+	Dtype()noexcept{}
 
-	struct Ex{
-		enum class Type{
-			unknown_t, // 型が不明。データ型として取り扱う。文字列型やオブジェクトの可能性もある。
-			int_t,     // 整数型
-			float_t,   // 浮動小数点数型
-			string_t,  // 文字列型
-			data_t,    // データ型
-			object_t,  // 型構造体
-		};
-		uint32_t id{};
-		Type type{Type::unknown_t};
-		bool is_array{false};
-		std::string name{};
+	class Node{
+	public:
+		Node()noexcept{}
+		bool is_multiple_keys()const noexcept{return _reference_count >= 2;}
+		bool is_int32()const noexcept{return _is_int32;}
+		bool is_int64()const noexcept{return _is_int64;}
+		bool is_float32()const noexcept{return _is_float32;}
+		bool is_float64()const noexcept{return _is_float64;}
+		bool is_object()const noexcept{return _is_object;}
+		bool is_string()const noexcept{return _is_string;}
+		bool is_data()const noexcept{return _is_data;}
+		bool is_int_unknown()const noexcept{return _is_int32 && _is_int64;}
+		bool is_float_unknown()const noexcept{return _is_float32 && _is_float64;}
+		bool is_data_unknown()const noexcept{return _is_object && _is_string && _is_data;}
+	private:
+		bool _is_int32{};
+		bool _is_int64{};
+		bool _is_float32{};
+		bool _is_float64{};
+		bool _is_object{};
+		bool _is_string{};
+		bool _is_data{};
+		uint32_t _reference_count{};
+		uint8_t _data[16]{};
+		size_t _data_size{};
+		friend class Dtype;
 	};
-	Ex *ex(Node &node)noexcept{return reinterpret_cast<Ex *>(node.ex);}
 
-	Node *push_back_int(Node &parent, uint32_t id)noexcept;
-	Node *push_back_float(Node &parent, uint32_t id)noexcept;
-	Node *push_back_unknown(Node &parent, uint32_t id)noexcept;
+	using id_t = std::vector<uint64_t>;
 
-	Node *search_id(Node &parent_object, uint32_t id)const noexcept;
-	Node *search_name(Node &parent_object, const std::string &name)const noexcept;
+	const Node *get(const id_t &id)const noexcept{
+		if(auto it = _nodes.find(id); it != _nodes.end()){
+			return &it->second;
+		}
+		return nullptr;
+	}
+
+	//bool is_update(void)const noexcept{return _is_update;}
+	bool analyze(Reader r, const id_t &parent_id={})noexcept;
+
+	bool read_csv(const string_t &string)noexcept;
+	bool write_csv(Writer &w)const noexcept;
 
 private:
-	bool _load(Node &node)noexcept;
-	bool _save(Node &node)noexcept;
-	
-	std::list<Ex> _exes{};
+	enum class CodeType{
+		Int = 0,
+		// 1 �s��
+		Data = 2,
+		// 3 �s��
+		// 4 �s��
+		Float32 = 5,
+		// 6 �s��
+		// 7 �s��
+	};
+	struct id_hash{
+		size_t operator()(const id_t &v)const noexcept{
+			size_t h = 0;
+			for(auto &x : v){
+				h ^= std::hash<uint64_t>{}(x) + 0x9e3779b97f4a7c15ULL + (h << 6) + (h >> 2);
+			}
+			return h;
+		}
+	};
+	struct id_equal{
+		bool operator()(const id_t &a, const id_t &b)const noexcept{return a == b;}
+	};
+	std::unordered_map<id_t, Node, id_hash, id_equal> _nodes{};
+	//bool _is_update{false};
+	bool _is_error(Reader r)const noexcept;
 };

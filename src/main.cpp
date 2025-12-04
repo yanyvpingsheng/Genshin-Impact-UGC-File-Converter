@@ -1,40 +1,40 @@
-#include "Ugc.h"
+#include "Tson.h"
+#include "Util.h"
 #include <stdio.h>
-#include <windows.h>
 
 int main(int argc, char *argv[]){
 
-	enum class MODE{
-		DEFAULT,
-		DECODE,
-		ENCODE,
+	enum class Mode{
+		Default,
+		Decode,
+		Encode,
 	};
-	MODE mode = MODE::DEFAULT;
+	Mode mode = Mode::Default;
   const char *path_input = nullptr;
   const char *path_output = nullptr;
 	const char *path_dtype = nullptr;
 	for(int i = 1; i < argc; ++i){
 		if(*argv[i] == '-'){
 			switch(argv[i][1]){
+			case 'd':
+				mode = Mode::Decode;
+				break;
+			case 'e':
+				mode = Mode::Encode;
+				break;
 			case 'o':
 				if(i + 1 < argc){
 					path_output = argv[++i];
 				}else{
-					fprintf(stderr, "Error: -o ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã«å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«åãŒã‚ã‚Šã¾ã›ã‚“ã€‚\n");
+					fprintf(stderr, "Error: -o ƒIƒvƒVƒ‡ƒ“‚Éo—Íƒtƒ@ƒCƒ‹–¼‚ª‚ ‚è‚Ü‚¹‚ñB\n");
 					return 1;
 				}
-				break;
-			case 'd':
-				mode = MODE::DECODE;
-				break;
-			case 'e':
-				mode = MODE::ENCODE;
 				break;
 			case 't':
 				if(i + 1 < argc){
 					path_dtype = argv[++i];
 				}else{
-					fprintf(stderr, "Error: -t ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã«dtypeãƒ•ã‚¡ã‚¤ãƒ«åãŒã‚ã‚Šã¾ã›ã‚“ã€‚\n");
+					fprintf(stderr, "Error: -t ƒIƒvƒVƒ‡ƒ“‚Édtypeƒtƒ@ƒCƒ‹–¼‚ª‚ ‚è‚Ü‚¹‚ñB\n");
 					return 1;
 				}
 				break;
@@ -44,85 +44,117 @@ int main(int argc, char *argv[]){
     }
   }
   if(!path_input){
-    fprintf(stderr, "ä½¿ã„æ–¹: %s [ã‚ªãƒ—ã‚·ãƒ§ãƒ³] å…¥åŠ›ãƒ•ã‚¡ã‚¤ãƒ«å\n", argv[0]);
-    fprintf(stderr, "ã‚ªãƒ—ã‚·ãƒ§ãƒ³:\n");
-    fprintf(stderr, "  -d : ãƒ‡ã‚³ãƒ¼ãƒ‰ãƒ¢ãƒ¼ãƒ‰ gil,giaâ†’json\n");
-		fprintf(stderr, "  -e : ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰ãƒ¢ãƒ¼ãƒ‰ jsonâ†’gil,gia\n");
-		fprintf(stderr, "  -o å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«å : å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«åã‚’æŒ‡å®š(ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ:output.jsonã€output.gilã€output.gia)\n");
-		fprintf(stderr, "  -t dtypeãƒ•ã‚¡ã‚¤ãƒ«å : dtypeãƒ•ã‚¡ã‚¤ãƒ«åã‚’æŒ‡å®š(ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ:dtype.json)\n");
+    fprintf(stderr, "g‚¢•û: %s [ƒIƒvƒVƒ‡ƒ“] “ü—Íƒtƒ@ƒCƒ‹–¼\n", argv[0]);
+    fprintf(stderr, "ƒIƒvƒVƒ‡ƒ“:\n");
+    fprintf(stderr, "  -d : ƒfƒR[ƒhƒ‚[ƒh .gil .gia .mihoyobin ¨ json\n");
+		fprintf(stderr, "  -e : ƒGƒ“ƒR[ƒhƒ‚[ƒh json ¨ .gil .gia .mihoyobin\n");
+		fprintf(stderr, "  -o o—Íƒtƒ@ƒCƒ‹–¼ : o—Íƒtƒ@ƒCƒ‹–¼‚ğw’è\n");
+		fprintf(stderr, "  -t dtypeƒtƒ@ƒCƒ‹–¼ : dtypeƒtƒ@ƒCƒ‹–¼‚ğw’è\n");
     return 1;
   }
 
-	// ãƒ¢ãƒ¼ãƒ‰åˆ¤å®š
-	if(mode == MODE::DEFAULT){
+	// ƒ‚[ƒh”»’è
+	if(mode == Mode::Default){
 		auto size = strlen(path_input);
-		if(size >= 5 && _stricmp(&path_input[size - 5], ".json") == 0){
-			mode = MODE::ENCODE;
-		}else{
-			mode = MODE::DECODE;
-		}
+		mode = (size >= 5 && _stricmp(&path_input[size - 5], ".json") == 0) ? Mode::Encode : Mode::Decode;
 	}
 
-	if(!path_output){
-		if(mode == MODE::DECODE){
+	// ƒfƒR[ƒh
+	if(mode == Mode::Decode){
+		Tson tson;
+		if(!tson.preload_btson(path_input)){
+			fprintf(stderr, "Error: –¢‘Î‰‚ÌŠg’£qB“ü—Íƒtƒ@ƒCƒ‹‚Ìí—Ş‚ª•s–¾‚Å‚·B\n");
+			return 1;
+		}
+		if(!path_dtype){
+			switch(tson.filetype()){
+			case Tson::FileType::gia:
+				path_dtype = "dtype/gia.csv";
+				break;
+			case Tson::FileType::gil:
+				path_dtype = "dtype/gil.csv";
+				break;
+			case Tson::FileType::mihoyobin:
+				switch(tson.dirtype()){
+				case Tson::DirType::Beyond_BeyondGlobal:
+					path_dtype = "dtype/mihoyobin_BeyondGlobal.csv";
+					break;
+				case Tson::DirType::Beyond_Node:
+					path_dtype = "dtype/mihoyobin_BeyondNode.csv";
+					break;
+				case Tson::DirType::Beyond_Official_Blueprint_OfficialCompoundNode:
+					path_dtype = "dtype/mihoyobin_OfficialCompoundNode.csv";
+					break;
+				case Tson::DirType::Beyond_Official_OfficialPrefab:
+					path_dtype = "dtype/mihoyobin_OfficialPrefab.csv";
+					break;
+				case Tson::DirType::Beyond_Official_Struct:
+					path_dtype = "dtype/mihoyobin_OfficialStruct.csv";
+					break;
+				case Tson::DirType::Config_JsonConfig_ShortCutKey:
+					path_dtype = "dtype/mihoyobin_ConfigShortCutKey.csv";
+					break;
+				case Tson::DirType::Config_JsonConfig_SynonymsLibrary:
+					path_dtype = "dtype/mihoyobin_ConfigSynonymsLibrary.csv";
+					break;
+				case Tson::DirType::TextMap:
+					path_dtype = "dtype/mihoyobin_TextMap.csv";
+					break;
+				}
+				break;
+			}
+		}
+		if(path_dtype){
+			std::string buf;
+			if(LoadFile(buf, path_dtype)){
+				tson.read_dtype(buf);
+			}
+		}
+		if(!tson.load_btson(path_input)){
+			fprintf(stderr, "Error: “ü—Íƒtƒ@ƒCƒ‹‚ª“Ç‚İ‚ß‚Ü‚¹‚ñ‚Å‚µ‚½B\n");
+			return 1;
+		}
+		Writer w;
+		tson.write_dtype(w);
+		if(path_dtype){
+			SaveFile(path_dtype, w.data());
+		}
+		if(!path_output){
 			path_output = "output.json";
 		}
-	}
-	if(!path_dtype){
-		path_dtype = "dtype.json";
-	}
-
-	// åˆæœŸåŒ–
-	Ugc ugc;
-	if(!ugc.load_dtype(path_dtype)){
-		printf("ã‚¨ãƒ©ãƒ¼: dtypeãƒ•ã‚¡ã‚¤ãƒ«ãŒèª­ã¿è¾¼ã‚ã¾ã›ã‚“ã§ã—ãŸã€‚\n");
-		return 1;
-	}
-
-	// ãƒ‡ã‚³ãƒ¼ãƒ‰
-	if(mode == MODE::DECODE){
-		if(!ugc.load_file(path_input)){
-			printf("ã‚¨ãƒ©ãƒ¼: å…¥åŠ›ãƒ•ã‚¡ã‚¤ãƒ«ãŒèª­ã¿è¾¼ã‚ã¾ã›ã‚“ã§ã—ãŸã€‚\n");
-			return 1;
-		}
-		if(!ugc.save_json(path_output)){
-			printf("ã‚¨ãƒ©ãƒ¼: å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ãŒæ›¸ãè¾¼ã‚ã¾ã›ã‚“ã§ã—ãŸã€‚\n");
+		if(!tson.save_json(path_output, w)){
+			fprintf(stderr, "Error: o—Íƒtƒ@ƒCƒ‹‚ª‘‚«‚ß‚Ü‚¹‚ñ‚Å‚µ‚½B\n");
 			return 1;
 		}
 	}
 
-	// ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰
-	else if(mode == MODE::ENCODE){
-		if(!ugc.load_json(path_input)){
-			printf("ã‚¨ãƒ©ãƒ¼: å…¥åŠ›ãƒ•ã‚¡ã‚¤ãƒ«ãŒèª­ã¿è¾¼ã‚ã¾ã›ã‚“ã§ã—ãŸã€‚\n");
+	// ƒGƒ“ƒR[ƒh
+	else{
+		Tson tson;
+		if(!tson.load_json(path_input)){
+			fprintf(stderr, "Error: “ü—Íƒtƒ@ƒCƒ‹‚ª“Ç‚İ‚ß‚Ü‚¹‚ñ‚Å‚µ‚½B\n");
 			return 1;
 		}
 		if(!path_output){
-			if(ugc.is_gil()){
-				path_output = "output.gil";
-			}else{
+			switch(tson.filetype()){
+			case Tson::FileType::gia:
 				path_output = "output.gia";
+				break;
+			case Tson::FileType::gil:
+				path_output = "output.gil";
+				break;
+			case Tson::FileType::mihoyobin:
+				path_output = "output.mihoyobin";
+				break;
+			default:
+				fprintf(stderr, "Error: o—Íƒtƒ@ƒCƒ‹‚Ìí—Ş‚ª•s–¾‚Å‚·B\n");
+				return 1;
 			}
 		}
-		if(!ugc.save_file(path_output)){
-			printf("ã‚¨ãƒ©ãƒ¼: å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ãŒæ›¸ãè¾¼ã‚ã¾ã›ã‚“ã§ã—ãŸã€‚\n");
+		if(!tson.save_btson(path_output)){
+			fprintf(stderr, "Error: o—Íƒtƒ@ƒCƒ‹‚ª‘‚«‚ß‚Ü‚¹‚ñ‚Å‚µ‚½B\n");
 			return 1;
 		}
-	}
-
-	// ãƒ­ã‚°
-	if(ugc.is_update()){
-		printf("dtypeãƒ•ã‚¡ã‚¤ãƒ«ã®æ›´æ–°ã‚ã‚Š\n");
-		std::string new_path;
-		try{
-			new_path = std::string(path_dtype) + ".bak";
-			MoveFileExA(path_dtype, new_path.c_str(), MOVEFILE_REPLACE_EXISTING);
-		}catch(...){
-		}
-		if(!ugc.save_dtype(path_dtype) && !new_path.empty()){
-			MoveFileExA(new_path.c_str(), path_dtype, MOVEFILE_REPLACE_EXISTING);
-		}
-		//ugc.print_log();
 	}
 
 	return 0;
